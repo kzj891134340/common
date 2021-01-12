@@ -1,0 +1,39 @@
+plugins {
+    id "io.franzbecker.gradle-lombok" version "2.2"
+    id 'org.springframework.boot' version '2.3.2.RELEASE' apply false
+}
+
+group 'com.konzj.common'
+version '1.0.0'
+
+apply from: "libraries.gradle"
+apply from: "java.gradle"
+apply from: "idea.gradle"
+apply from: "bundle-spring-boot-app.gradle"
+
+repositories {
+    maven { url "${project.'owner.repo'}" }
+    maven { url "${project.'repo'}" }
+    jcenter()
+}
+
+configurations {
+    compile.exclude module: "spring-boot-starter-tomcat"
+}
+
+dependencies {
+    compileOnly lib.retrofit
+    compileOnly lib.spring_boot_web
+    compileOnly lib.spring_boot_data_mongodb
+    compileOnly lib.spring_boot_undertow
+    compileOnly lib.spring_boot_actuator
+    compileOnly lib.spring_cloud_commons
+    compileOnly lib.okhttp3
+    compileOnly lib.commons_lang3
+    compileOnly lib.commons_codec
+    compileOnly lib.spring_data_mongodb
+    compileOnly lib.spring_security_oauth2
+    compileOnly lib.spring_boot_oauth
+    compileOnly lib.netty_all
+    testCompile lib._test
+}

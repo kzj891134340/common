@@ -1,0 +1,204 @@
+apply plugin: 'application'
+apply plugin: 'org.springframework.boot'
+
+ext.bundle = [
+        debug                      : true,
+        springCloudK8sConfigEnabled: false,
+        springCloudConfigEnabled   : false
+]
+
+processResources {
+    doLast {
+        def version = new File("$buildDir/version")
+        def out = version.newPrintWriter()
+        out.print(project.version)
+        out.flush()
+        out.close()
+        def keepfile = project.properties['bundle.keepproperties'] ?: false
+        if (keepfile) {
+            return
+        }
+        def debug = bundle.debug ?: false
+        if (debug) {
+            return
+        }
+        def springCloudConfigEnabled = bundle.springCloudConfigEnabled ?: false
+        def springCloudK8sConfigEnabled = bundle.springCloudK8sConfigEnabled ?: false
+
+        file("${buildDir}/resources/main").listFiles().each { file ->
+            if (!(file.name.contains("application") || file.name.contains("bootstrap") || file.name.contains("logback"))) {
+                return
+            }
+
+            if ((file.name.contains("bootstrap-kubernetes") || file.name.contains("bootstrap-k8s")) && springCloudK8sConfigEnabled) {
+                println "启用Spring Cloud Kubernetes Config 保留文件: ${file.name}"
+                return
+            }
+            if (file.name.contains("bootstrap") && !(file.name.contains("bootstrap-kubernetes") || file.name.contains("bootstrap-k8s")) && springCloudConfigEnabled) {
+                println "启用Spring Cloud Config保留文件: ${file.name}"
+                return
+            }
+
+            println "删除文件${file.path}"
+            file.delete()
+        }
+    }
+}
+
+
+/**
+ * 打包引用程序
+ * 添加Spring Cloud Config支持
+ */
+def handleSpringCloudConfig() {
+    println "打包应用程序,并添加Spring Cloud Config 支持."
+    project.dependencies.add("compile", lib.spring_cloud_config)
+    bundle.springCloudConfigEnabled = true
+    println "更改版本编号为: ${project.version}-scc (Spring Cloud Config)"
+    project.version = "${project.version}-ssc"
+}
+
+def handleSpringCloudKubernetesConfig() {
+    println "打包应用程序,并添加Spring Cloud Kubernetes Config 支持."
+    project.dependencies.add("compile", lib.spring_cloud_k8s_config)
+    bundle.springCloudK8sConfigEnabled = true
+    println "更改版本编号为: ${project.version}-k8s"
+    project.version = "${project.version}-k8s"
+}
+
+def handleSpringCloudKubernetesWithConfig() {
+    println "打包应用程序,并添加Spring Cloud Kubernetes 和 Spring Cloud Kubernetes Config 支持."
+    project.dependencies.add("compile", lib.spring_cloud_k8s)
+    project.dependencies.add("compile", lib.spring_cloud_k8s_config)
+    bundle.springCloudK8sConfigEnabled = true
+    println "更改版本编号为: ${project.version}-k8s"
+    project.version = "${project.version}-k8s"
+}
+
+gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
+    if (taskGraph.hasTask(bootDistZip)) {
+        bundle.debug = false
+    }
+    //注册的生命周期钩子在task图生成后被调用
+    if (taskGraph.hasTask(bundleSpringCloudConfig)) {
+        handleSpringCloudConfig()
+    } else if (taskGraph.hasTask(bundleSpringCloudKubernetesConfig)) {
+        handleSpringCloudKubernetesConfig()
+    } else if (taskGraph.hasTask(bundleSpringCloudKubernetesWithConfig)) {
+        handleSpringCloudKubernetesWithConfig()
+    }
+}
+
+
+/**
+ * 默认打包
+ */
+task bundleDefault(dependsOn: bootDistZip, group: "bundle") {}
+
+/**
+ * 打包并添加Spring Cloud Config 支持
+ */
+task bundleSpringCloudConfig(dependsOn: bootDistZip, group: "bundle") {}
+
+// k8s
+/**
+ * 打包并添加Spring Cloud k8s Config 支持
+ */
+task bundleSpringCloudKubernetesConfig(dependsOn: bootDistZip, group: "bundle") {}
+
+task bundleSpringCloudKubernetesWithConfig(dependsOn: bootDistZip, group: "bundle") {
+    description "加入Spring Cloud K8s 和 Spring Cloud k8s config"
+}
+
+
+// --------------------- Docker Bundle
+def createDockerfile() {
+    def dockerfile = new File("$buildDir/Dockerfile")
+    def out = dockerfile.newPrintWriter();
+
+    out.println("FROM kongzj/spring-boot-app:1.0.0")
+    out.println("ENV APP_NAME=${project.name}")
+    out.println("ADD bootScripts \$APP_HOME/bin")
+    out.println("RUN mkdir \$APP_HOME/lib")
+    out.println("ADD libs/${project.name}-${project.version}.jar \$APP_HOME/lib/${project.name}-${project.version}.jar")
+    out.flush()
+    out.close()
+
+    println "cat $buildDir/Dockerfile".execute().text
+}
+
+def dockerBuild() {
+    createDockerfile()
+    def name = "${project.'docker.image.namespace'}/${project.name}:${project.version}"
+    println "docker build -t ${name} ${buildDir}".execute().text
+}
+
+def dockerPublish() {
+    def name = "${project.'docker.image.namespace'}/${project.name}:${project.version}"
+    println "docker push ${name}".execute().text
+}
+
+/**
+ * 打包Docker应用程序
+ */
+task bundleDocker(dependsOn: bundleDefault, group: "bundledocker") {
+    doLast {
+        dockerBuild()
+    }
+}
+
+
+task bundleDockerPublish(dependsOn: bundleDocker, group: "bundledocker") {
+    doLast {
+        dockerPublish()
+    }
+}
+
+
+// Spring Cloud Config start
+task bundleSpringCloudConfigDocker(dependsOn: bundleSpringCloudConfig, group: "bundledocker") {
+    doLast {
+        dockerBuild()
+    }
+}
+
+task bundleSpringCloudConfigDockerPublish(dependsOn: bundleSpringCloudConfigDocker, group: "bundledocker") {
+    doLast {
+        dockerPublish()
+    }
+}
+// Spring Cloud Config end
+
+// Spring Cloud Kubernetes Config start
+task bundleSpringCloudKubernetesConfigDocker(dependsOn: bundleSpringCloudKubernetesConfig, group: "bundledocker") {
+    doLast {
+        dockerBuild()
+    }
+}
+
+task bundleSpringCloudKubernetesConfigDockerPublish(dependsOn: bundleSpringCloudKubernetesConfigDocker, group: "bundledocker") {
+    doLast {
+        dockerPublish()
+    }
+}
+// Spring Cloud Kubernetes Config end
+
+
+// Spring Cloud Kubernetes 和 Spring Cloud Kubernetes Config start
+task bundleSpringCloudKubernetesWithConfigDocker(dependsOn: bundleSpringCloudKubernetesWithConfig, group: "bundledocker") {
+    doLast {
+        dockerBuild()
+    }
+}
+
+task bundleSpringCloudKubernetesWithConfigDockerPublish(dependsOn: bundleSpringCloudKubernetesWithConfigDocker, group: "bundledocker") {
+    doLast {
+        dockerPublish()
+    }
+}
+// Spring Cloud Kubernetes 和 Spring Cloud Kubernetes Config end
+
+// ---------- Spring Boot
+bootJar {
+    launchScript()
+}

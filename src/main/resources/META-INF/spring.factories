@@ -1,0 +1,8 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.kongzj.common.web.log.LogIdAutoConfiguration, \
+com.kongzj.common.web.WebAppAutoConfiguration, \
+com.kongzj.common.web.WebErrorConfiguration,\
+com.kongzj.common.web.controller.SecurityRestControllerExceptionHandlerController,\
+com.kongzj.common.web.controller.RestControllerExceptionHandlerController, \
+com.kongzj.common.web.security.oauth2.OAuth2ExceptionRendererConfiguration, \
+com.kongzj.common.web.security.oauth2.UserAuthenticationConverterConfiguration

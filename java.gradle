@@ -1,0 +1,8 @@
+apply plugin: 'java'
+
+[compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
+
+compileJava {
+    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_1_8
+}
