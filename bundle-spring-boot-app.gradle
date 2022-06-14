@@ -52,7 +52,7 @@ processResources {
  */
 def handleSpringCloudConfig() {
     println "打包应用程序,并添加Spring Cloud Config 支持."
-    project.dependencies.add("compile", lib.spring_cloud_config)
+    project.dependencies.add("compile", spring_cloud.k8s_config)
     bundle.springCloudConfigEnabled = true
     println "更改版本编号为: ${project.version}-scc (Spring Cloud Config)"
     project.version = "${project.version}-ssc"
@@ -60,7 +60,7 @@ def handleSpringCloudConfig() {
 
 def handleSpringCloudKubernetesConfig() {
     println "打包应用程序,并添加Spring Cloud Kubernetes Config 支持."
-    project.dependencies.add("compile", lib.spring_cloud_k8s_config)
+    project.dependencies.add("compile", spring_cloud.k8s_config)
     bundle.springCloudK8sConfigEnabled = true
     println "更改版本编号为: ${project.version}-k8s"
     project.version = "${project.version}-k8s"
@@ -68,8 +68,8 @@ def handleSpringCloudKubernetesConfig() {
 
 def handleSpringCloudKubernetesWithConfig() {
     println "打包应用程序,并添加Spring Cloud Kubernetes 和 Spring Cloud Kubernetes Config 支持."
-    project.dependencies.add("compile", lib.spring_cloud_k8s)
-    project.dependencies.add("compile", lib.spring_cloud_k8s_config)
+    project.dependencies.add("compile", spring_cloud.k8s_all)
+    project.dependencies.add("compile", spring_cloud.k8s_config)
     bundle.springCloudK8sConfigEnabled = true
     println "更改版本编号为: ${project.version}-k8s"
     project.version = "${project.version}-k8s"
@@ -116,7 +116,7 @@ def createDockerfile() {
     def dockerfile = new File("$buildDir/Dockerfile")
     def out = dockerfile.newPrintWriter();
 
-    out.println("FROM kongzj/spring-boot-app:1.0.0")
+    out.println("FROM springbootapp:1.0.0")
     out.println("ENV APP_NAME=${project.name}")
     out.println("ADD bootScripts \$APP_HOME/bin")
     out.println("RUN mkdir \$APP_HOME/lib")

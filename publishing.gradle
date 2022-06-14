@@ -1,0 +1,39 @@
+apply plugin: 'maven-publish'
+configurations {
+    [apiElements, runtimeElements].each {
+        it.outgoing.artifacts.removeIf { it.buildDependencies.getDependencies(null).contains(jar) }
+        it.outgoing.artifact(bootJar)
+    }
+}
+
+
+publishing {
+    publications {
+        myPublication(MavenPublication) {
+            groupId project.group
+            artifactId project.name
+            version project.version
+            from components.java
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            //指定要上传的maven私服仓库
+            url = "${project.'repo.url'}"
+            //认证用户和密码
+            credentials {
+                username "${project.'repo.username'}"
+                password "${project.'repo.password'}"
+            }
+            allowInsecureProtocol = true
+        }
+    }
+}

@@ -1,0 +1,69 @@
+ext.spring = project.properties['spring.version'] ?: '5.3.7'
+ext.spring_data = project.properties['springdata.version'] ?: '2.5.1'
+ext.spring_data_mongodb = project.properties['springdatamongodb.version'] ?: '3.2.1'
+ext.spring_cloud_k8s = project.properties['springcloudk8s.version'] ?: '2.0.3'
+ext.spring_cloud_oauth = project.properties['springcloudoauth.version'] ?: '2.2.5.RELEASE'
+
+ext.spring = [
+        core        : "org.springframework:spring-core:$spring",
+        beans       : "org.springframework:spring-beans:$spring",
+        context     : "org.springframework:spring-context:$spring",
+        orm         : "org.springframework:spring-orm:$spring",
+        data_commons: "org.springframework.data:spring-data-commons:$spring_data",
+        data_jpa    : "org.springframework.data:spring-data-jpa:$spring_data",
+        data_mongodb: "org.springframework.data:spring-data-mongodb:$spring_data_mongodb",
+        data_redis  : "org.springframework.data:spring-data-redis:$spring_data",
+        jms         : "org.springframework:spring-jms:$spring",
+
+]
+
+ext.spring_boot = [
+        starter                : "org.springframework.boot:spring-boot-starter",
+        actuator               : "org.springframework.boot:spring-boot-starter-actuator",
+        remote_shell           : "org.springframework.boot:spring-boot-starter-remote-shell",
+        aop                    : "org.springframework.boot:spring-boot-starter-aop",
+        web                    : "org.springframework.boot:spring-boot-starter-web",
+        webflux                : "org.springframework.boot:spring-boot-starter-webflux",
+        email                  : "org.springframework.boot:spring-boot-starter-mail",
+        data_jpa               : "org.springframework.boot:spring-boot-starter-data-jpa",
+        data_jdbc              : "org.springframework.boot:spring-boot-starter-jdbc",
+        data_mongodb           : "org.springframework.boot:spring-boot-starter-data-mongodb",
+        data_redis             : "org.springframework.boot:spring-boot-starter-data-redis",
+        data_redis_reactive    : "org.springframework.boot:spring-boot-starter-data-redis-reactive",
+        freemarker             : "org.springframework.boot:spring-boot-starter-freemarker",
+        thymeleaf              : "org.springframework.boot:spring-boot-starter-thymeleaf",
+        websocket              : "org.springframework.boot:spring-boot-starter-websocket",
+        security               : "org.springframework.boot:spring-boot-starter-security",
+        jdbc                   : "org.springframework.boot:spring-boot-starter-jdbc",
+        jta_atomikos           : "org.springframework.boot:spring-boot-starter-jta-atomikos",
+        activemq               : "org.springframework.boot:spring-boot-starter-activemq",
+        amqp                   : "org.springframework.boot:spring-boot-starter-amqp",
+        configuration_processor: "org.springframework.boot:spring-boot-configuration-processor",
+        hateoas                : "org.springframework.boot:spring-boot-starter-hateoas",
+        integration            : "org.springframework.boot:spring-boot-starter-integration",
+        devtools               : "org.springframework.boot:spring-boot-devtools",
+        undertow               : "org.springframework.boot:spring-boot-starter-undertow",
+        batch                  : "org.springframework.boot:spring-boot-starter-batch",
+        validation             : "org.springframework.boot:spring-boot-starter-validation",
+        autoconfigure          : "org.springframework.boot:spring-boot-autoconfigure",
+        test                   : "org.springframework.boot:spring-boot-starter-test",
+]
+
+
+ext.spring_cloud = [
+        commons       : "org.springframework.cloud:spring-cloud-commons",
+        config        : "org.springframework.cloud:spring-cloud-starter-config",
+        config_server : "org.springframework.cloud:spring-cloud-config-server",
+        eureka_client : "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client",
+        eureka_server : "org.springframework.cloud:spring-cloud-starter-netflix-eureka-server",
+        eureka        : "org.springframework.cloud:spring-cloud-starter-eureka",
+        oauth         : "org.springframework.cloud:spring-cloud-starter-oauth2:${spring_cloud_oauth}",
+        security      : "org.springframework.cloud:spring-cloud-starter-security",
+        openfeign     : "org.springframework.cloud:spring-cloud-starter-openfeign",
+        gateway       : "org.springframework.cloud:spring-cloud-starter-gateway",
+        zuul          : "org.springframework.cloud:spring-cloud-starter-zuul",
+        netflix_ribbon: "org.springframework.cloud:spring-cloud-starter-netflix-ribbon",
+        k8s_all       : "org.springframework.cloud:spring-cloud-starter-kubernetes-client-all",
+        k8s_client    : "org.springframework.cloud:spring-cloud-starter-kubernetes-client",
+        k8s_config    : "org.springframework.cloud:spring-cloud-starter-kubernetes-client-config",
+]
