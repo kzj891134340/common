@@ -80,7 +80,7 @@ def createDockerfile() {
     out.println("\n")
 
 
-    out.println("FROM  spring-boot-app:2.0.0")
+    out.println("FROM  spring-boot-app:1.0.0")
     out.println("ENV APP_NAME=${project.name}")
     out.println("COPY --from=builder app/application/ ./")
     out.println("COPY --from=builder app/dependencies/ ./")
