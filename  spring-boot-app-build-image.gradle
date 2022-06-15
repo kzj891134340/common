@@ -72,7 +72,7 @@ def createDockerfile() {
 
 //    def fromBase = project.properties['docker.fromBase'] ?: ''
 
-    out.println("FROM springbootapp:1.0.0 as builder")
+    out.println("FROM springbootapp:2.0.0 as builder")
     out.println("WORKDIR /app")
     out.println("ARG JAR_FILE=libs/${project.name}-${project.version}.jar")
     out.println("COPY \$JAR_FILE application.jar")
@@ -80,7 +80,7 @@ def createDockerfile() {
     out.println("\n")
 
 
-    out.println("FROM  springbootapp:1.0.0")
+    out.println("FROM  springbootapp:2.0.0")
     out.println("ENV APP_NAME=${project.name}")
     out.println("COPY --from=builder app/application/ ./")
     out.println("COPY --from=builder app/dependencies/ ./")
