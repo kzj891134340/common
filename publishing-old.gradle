@@ -25,6 +25,7 @@ publishing {
                 username "${project.'repo.username'}"
                 password "${project.'repo.password'}"
             }
+            allowInsecureProtocol = true
         }
     }
 }
