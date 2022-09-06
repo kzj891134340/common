@@ -6,7 +6,7 @@ import org.springframework.security.core.userdetails.User;
 import java.util.Collection;
 
 /**
- * @author zjkong@easipay.net
+ * @author zjkong
  * @date 2021/1/12 4:08 下午
  */
 public class DefaultUserDetails extends User {
